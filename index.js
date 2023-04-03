@@ -23,6 +23,7 @@ let events = {
     },
 
 };
+
 let devicetype="";
 
 
@@ -34,9 +35,55 @@ const isTouchDevice= ()=>{
         document.createEvent("TouchEvent");
         devicetype="touch"
         return true;
-
     }
     catch(e){
-        
+        devicetype="mouse"
+        return false;
     }
 }
+isTouchDevice();
+
+
+
+gridButton.addEventListener("click", ()=>{
+    container.innerHTML="";
+    let count=0;
+
+    for (let i=0; i<gridheight.value; i++){
+
+        count+=2;
+        let div =document.createEvent("div");
+        div.classlist.add(gridRow)
+
+        for (let j=0; j<gridwidth.value; j++){
+           count +=2;
+           let col = document.createEvent("div");
+           col.classlist.add("gridCol")
+           col.setAttribute("id",`grid${count}`);
+
+
+           col.addEventListener(events[devicetype].down,()=>{
+            draw=true;
+            if(erase){col.style.backgroundcolor= "transparent";}
+             else {col.style.backgroundcolor=colorbutton.value};
+           });
+
+
+           col.addEventListener(events[devicetype].move,(e=>{
+            let elementid=Document.elementFormpoint(
+                !isTouchDevice()? e.clientx:e.touches[0].clientx,
+                !isTouchDevice()? e.clienty:e.touches[0].clienty,), id;
+
+            checker(elementid);
+           }));
+
+           col.addEventListener(events[devicetype].up,()=>{
+            draw=false;
+           });
+           div.appendChild(col);
+
+        };
+        container.appendChild(div);
+    }
+});
+
